@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
-import ForecastChart from '@/components/ForecastChart';
 import DateRangePicker from '@/components/DateRangePicker';
 import HorizonSlider from '@/components/HorizonSlider';
-import KpiCards from '@/components/KpiCards';
+import ErrorAnalysisCharts from '@/components/ErrorAnalysisCharts';
 import { WindDataResponse } from '@/lib/types';
 
-export default function Home() {
-  // Default to January 2024
+export default function AnalysisPage() {
   const [startDate, setStartDate] = useState('2024-01-01T00:00');
   const [endDate, setEndDate] = useState('2024-01-07T23:59');
   const [horizon, setHorizon] = useState(24);
@@ -55,10 +53,10 @@ export default function Home() {
         {/* Page Title */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">
-            Forecast Monitoring Dashboard
+            Forecast Accuracy Analysis
           </h2>
           <p className="mt-2 text-gray-600">
-            Real-time comparison of actual vs forecasted wind generation in the UK
+            Detailed error analysis and forecast performance metrics
           </p>
         </div>
 
@@ -78,7 +76,7 @@ export default function Home() {
               disabled={loading}
               className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors w-full sm:w-auto font-medium"
             >
-              {loading ? 'Loading...' : 'Update Data'}
+              {loading ? 'Loading...' : 'Update Analysis'}
             </button>
           </div>
         </div>
@@ -91,19 +89,9 @@ export default function Home() {
           </div>
         )}
 
-        {/* Main Content */}
+        {/* Analysis Charts */}
         {data && data.data.length > 0 && (
-          <>
-            {/* KPI Cards */}
-            <div className="mb-6">
-              <KpiCards metrics={data.metrics} />
-            </div>
-
-            {/* Main Chart */}
-            <div className="mb-6">
-              <ForecastChart data={data.data} />
-            </div>
-          </>
+          <ErrorAnalysisCharts data={data.data} />
         )}
 
         {/* No Data Message */}

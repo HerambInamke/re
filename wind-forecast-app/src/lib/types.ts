@@ -21,6 +21,9 @@ export interface Metrics {
   mae: number;
   rmse: number;
   medianError: number;
+  p99Error: number;
+  bias: number;
+  count: number;
 }
 
 export interface WindDataResponse {

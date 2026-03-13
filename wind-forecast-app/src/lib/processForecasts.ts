@@ -1,4 +1,5 @@
 import { ActualDataPoint, ForecastDataPoint, ProcessedDataPoint, Metrics } from './types';
+import { calculateMetrics } from './calculateMetrics';
 
 /**
  * Process and align forecast data with actual generation data based on forecast horizon.
@@ -49,7 +50,6 @@ export function processForecasts(
 
   // Step 4: Process each actual data point and find matching forecast
   const processedData: ProcessedDataPoint[] = [];
-  const errors: number[] = [];
 
   actuals.forEach(actual => {
     const targetTime = new Date(actual.startTime).getTime();
@@ -80,48 +80,10 @@ export function processForecasts(
       actual: actual.generation,
       forecast: selectedForecast ? selectedForecast.generation : null
     });
-
-    // Step 9: Calculate error if forecast exists (for metrics)
-    if (selectedForecast) {
-      errors.push(Math.abs(actual.generation - selectedForecast.generation));
-    }
   });
 
-  // Step 10: Calculate performance metrics
+  // Step 9: Calculate performance metrics dynamically from processed data
   const metrics = calculateMetrics(processedData);
 
   return { data: processedData, metrics };
-}
-
-/**
- * Calculate error metrics comparing actual vs forecast values.
- * 
- * @param data - Processed data points with actual and forecast values
- * @returns Metrics object with MAE, RMSE, and Median Error
- */
-function calculateMetrics(data: ProcessedDataPoint[]): Metrics {
-  // Only consider data points where both actual and forecast exist
-  const validPairs = data.filter(d => d.actual !== null && d.forecast !== null);
-  
-  if (validPairs.length === 0) {
-    return { mae: 0, rmse: 0, medianError: 0 };
-  }
-
-  // Calculate absolute errors and squared errors
-  const errors = validPairs.map(d => Math.abs(d.actual! - d.forecast!));
-  const squaredErrors = validPairs.map(d => Math.pow(d.actual! - d.forecast!, 2));
-
-  // Mean Absolute Error: average of absolute differences
-  const mae = errors.reduce((sum, e) => sum + e, 0) / errors.length;
-  
-  // Root Mean Square Error: square root of average squared differences
-  const rmse = Math.sqrt(squaredErrors.reduce((sum, e) => sum + e, 0) / squaredErrors.length);
-  
-  // Median Error: middle value when errors are sorted
-  const sortedErrors = [...errors].sort((a, b) => a - b);
-  const medianError = sortedErrors.length % 2 === 0
-    ? (sortedErrors[sortedErrors.length / 2 - 1] + sortedErrors[sortedErrors.length / 2]) / 2
-    : sortedErrors[Math.floor(sortedErrors.length / 2)];
-
-  return { mae, rmse, medianError };
 }
