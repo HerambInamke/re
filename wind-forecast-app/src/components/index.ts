@@ -8,3 +8,7 @@ export { default as HorizonSlider } from './HorizonSlider';
 export { default as KpiCards } from './KpiCards';
 export { default as MetricsPanel } from './MetricsPanel';
 export { default as ReliabilityCharts } from './ReliabilityCharts';
+
+// Re-export for direct import
+export { default } from './ReliabilityCharts';
+

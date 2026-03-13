@@ -174,9 +174,10 @@ export default function ReliabilityPage() {
                 <ol className="ml-4 space-y-1 list-decimal list-inside">
                   <li>Set <span className="font-mono bg-white px-1 rounded">targetTime = actual.startTime</span></li>
                   <li>Use horizon value from slider</li>
-                  <li>Select forecasts where:<br/>
-                    <span className="font-mono bg-white px-2 py-1 rounded ml-6 inline-block mt-1">
-                      publishTime ≤ targetTime - horizon
+                  <li>
+                    Select forecasts where:
+                    <span className="font-mono bg-white px-2 py-1 rounded ml-2 inline-block mt-1">
+                      publishTime &le; targetTime - horizon
                     </span>
                   </li>
                   <li>Choose forecast with most recent publishTime</li>
@@ -198,7 +199,7 @@ export default function ReliabilityPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-orange-800">RMSE (Root Mean Square Error):</p>
-                  <p className="ml-4 font-mono text-xs bg-white px-2 py-1 rounded">√(mean((forecast - actual)²))</p>
+                  <p className="ml-4 font-mono text-xs bg-white px-2 py-1 rounded">sqrt(mean((forecast - actual)^2))</p>
                 </div>
                 <div>
                   <p className="font-semibold text-orange-800">Median Error:</p>

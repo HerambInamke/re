@@ -56,26 +56,14 @@ export default function ForecastChart({ data }: ForecastChartProps) {
   }));
 
   return (
-    <div className="w-full bg-white p-6 rounded-xl shadow-md border border-gray-200">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-gray-900">
-            Wind Generation: Actual vs Forecast
-          </h3>
-          <p className="text-sm text-gray-600 mt-1">
-            Real-time comparison of forecasted and actual wind power generation
-          </p>
-        </div>
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-blue-500 rounded"></div>
-            <span className="text-gray-700">Actual</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-green-500 rounded"></div>
-            <span className="text-gray-700">Forecast</span>
-          </div>
-        </div>
+    <div className="w-full bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+      <div className="mb-4">
+        <h3 className="text-sm font-medium text-gray-900">
+          Wind Generation: Actual vs Forecast
+        </h3>
+        <p className="text-xs text-gray-600 mt-1">
+          Real-time comparison of forecasted and actual wind power generation
+        </p>
       </div>
       
       <ResponsiveContainer width="100%" height={400}>
@@ -94,14 +82,14 @@ export default function ForecastChart({ data }: ForecastChartProps) {
               value: 'Generation (MW)', 
               angle: -90, 
               position: 'insideLeft',
-              style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 }
+              style: { fill: '#6b7280', fontSize: 12 }
             }}
             tick={{ fontSize: 11, fill: '#6b7280' }}
             stroke="#9ca3af"
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend 
-            wrapperStyle={{ fontSize: '13px', paddingTop: '10px' }}
+            wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
             iconType="line"
           />
           <Line 
@@ -109,20 +97,20 @@ export default function ForecastChart({ data }: ForecastChartProps) {
             dataKey="actual" 
             stroke="#3b82f6" 
             name="Actual Generation"
-            strokeWidth={2.5}
+            strokeWidth={2}
             dot={false}
             connectNulls
-            activeDot={{ r: 6, fill: '#3b82f6' }}
+            activeDot={{ r: 5, fill: '#3b82f6' }}
           />
           <Line 
             type="monotone" 
             dataKey="forecast" 
             stroke="#10b981" 
             name="Forecast Generation"
-            strokeWidth={2.5}
+            strokeWidth={2}
             dot={false}
             connectNulls={false}
-            activeDot={{ r: 6, fill: '#10b981' }}
+            activeDot={{ r: 5, fill: '#10b981' }}
           />
         </LineChart>
       </ResponsiveContainer>
