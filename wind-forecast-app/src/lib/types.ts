@@ -2,13 +2,13 @@
 
 export interface ActualDataPoint {
   startTime: string;
-  quantity: number;
+  generation: number;
 }
 
 export interface ForecastDataPoint {
   startTime: string;
   publishTime: string;
-  quantity: number;
+  generation: number;
 }
 
 export interface ProcessedDataPoint {

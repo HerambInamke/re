@@ -1,5 +1,17 @@
 import { ForecastDataPoint } from './types';
 
+/**
+ * Fetch wind generation forecast data from BMRS WINDFOR dataset.
+ * 
+ * The WINDFOR dataset provides wind generation forecasts with:
+ * - startTime: The time period being forecasted
+ * - publishTime: When the forecast was published
+ * - generation: Forecasted generation in MW
+ * 
+ * @param startDate - Start date in format 'YYYY-MM-DD HH:MM'
+ * @param endDate - End date in format 'YYYY-MM-DD HH:MM'
+ * @returns Array of forecast data points
+ */
 export async function fetchForecasts(
   startDate: string,
   endDate: string
@@ -14,9 +26,10 @@ export async function fetchForecasts(
   
   const json = await response.json();
   
+  // Map API response to our data structure using 'generation' field
   return json.data.map((item: any) => ({
     startTime: item.startTime,
     publishTime: item.publishTime,
-    quantity: item.quantity
+    generation: item.generation || item.quantity || 0
   }));
 }

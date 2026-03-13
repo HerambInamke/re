@@ -1,5 +1,15 @@
 import { ActualDataPoint } from './types';
 
+/**
+ * Fetch actual wind generation data from BMRS FUELHH dataset.
+ * 
+ * The FUELHH dataset provides half-hourly actual generation data by fuel type.
+ * We filter for WIND fuel type to get actual wind generation.
+ * 
+ * @param startDate - Start date in format 'YYYY-MM-DD HH:MM'
+ * @param endDate - End date in format 'YYYY-MM-DD HH:MM'
+ * @returns Array of actual wind generation data points
+ */
 export async function fetchActuals(
   startDate: string,
   endDate: string
@@ -14,8 +24,9 @@ export async function fetchActuals(
   
   const json = await response.json();
   
+  // Map API response to our data structure using 'generation' field
   return json.data.map((item: any) => ({
     startTime: item.startTime,
-    quantity: item.quantity
+    generation: item.generation || item.quantity || 0
   }));
 }
