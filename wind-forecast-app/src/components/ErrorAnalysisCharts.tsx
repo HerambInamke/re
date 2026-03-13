@@ -99,24 +99,27 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
   return (
     <div className="space-y-6">
       {/* Summary Stats */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-semibold text-blue-900 mb-2">Analysis Summary</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <p className="text-blue-600">Valid Pairs</p>
-            <p className="text-xl font-bold text-blue-900">{validData.length}</p>
+      <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500 rounded-xl p-6 shadow-md mb-6">
+        <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2 text-lg">
+          <span>📊</span>
+          Analysis Summary
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <p className="text-sm text-blue-600 font-medium mb-1">Valid Pairs</p>
+            <p className="text-2xl font-bold text-blue-900">{validData.length}</p>
           </div>
-          <div>
-            <p className="text-blue-600">Min Error</p>
-            <p className="text-xl font-bold text-blue-900">{minError.toFixed(2)} MW</p>
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <p className="text-sm text-blue-600 font-medium mb-1">Min Error</p>
+            <p className="text-2xl font-bold text-blue-900">{minError.toFixed(2)} MW</p>
           </div>
-          <div>
-            <p className="text-blue-600">Max Error</p>
-            <p className="text-xl font-bold text-blue-900">{maxError.toFixed(2)} MW</p>
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <p className="text-sm text-blue-600 font-medium mb-1">Max Error</p>
+            <p className="text-2xl font-bold text-blue-900">{maxError.toFixed(2)} MW</p>
           </div>
-          <div>
-            <p className="text-blue-600">Avg Error</p>
-            <p className="text-xl font-bold text-blue-900">
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <p className="text-sm text-blue-600 font-medium mb-1">Avg Error</p>
+            <p className="text-2xl font-bold text-blue-900">
               {(errors.reduce((a, b) => a + b, 0) / errors.length).toFixed(2)} MW
             </p>
           </div>
@@ -124,15 +127,20 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
       </div>
 
       {/* Error Distribution Histogram */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Error Distribution
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Frequency distribution of absolute forecast errors
-        </p>
-        <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={histogram} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <span>📊</span>
+              Error Distribution
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Frequency distribution of absolute forecast errors
+            </p>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={340}>
+          <BarChart data={histogram} margin={{ top: 5, right: 30, left: 20, bottom: 50 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
               dataKey="range" 
@@ -140,12 +148,12 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
               label={{ 
                 value: 'Error Range (MW)', 
                 position: 'insideBottom', 
-                offset: -10, 
-                style: { fill: '#6b7280', fontSize: 12 } 
+                offset: -15, 
+                style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 } 
               }}
               angle={-45}
               textAnchor="end"
-              height={80}
+              height={90}
             />
             <YAxis 
               tick={{ fontSize: 11, fill: '#6b7280' }}
@@ -153,33 +161,39 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
                 value: 'Frequency', 
                 angle: -90, 
                 position: 'insideLeft', 
-                style: { fill: '#6b7280', fontSize: 12 } 
+                style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 } 
               }}
             />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: '#fff', 
                 border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-                fontSize: '12px'
+                borderRadius: '8px',
+                fontSize: '12px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
               }}
               formatter={(value: any) => [`${value} occurrences`, 'Frequency']}
             />
-            <Bar dataKey="count" fill="#3b82f6" name="Frequency" />
+            <Bar dataKey="count" fill="#3b82f6" name="Frequency" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Error by Time of Day */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Average Error by Time of Day
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          How forecast accuracy varies throughout the day
-        </p>
-        <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={errorByHour} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <span>🕐</span>
+              Average Error by Time of Day
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">
+              How forecast accuracy varies throughout the day
+            </p>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={340}>
+          <LineChart data={errorByHour} margin={{ top: 5, right: 30, left: 20, bottom: 50 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
               dataKey="hour" 
@@ -187,8 +201,8 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
               label={{ 
                 value: 'Hour of Day', 
                 position: 'insideBottom', 
-                offset: -10, 
-                style: { fill: '#6b7280', fontSize: 12 } 
+                offset: -15, 
+                style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 } 
               }}
             />
             <YAxis 
@@ -197,15 +211,16 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
                 value: 'Average Error (MW)', 
                 angle: -90, 
                 position: 'insideLeft', 
-                style: { fill: '#6b7280', fontSize: 12 } 
+                style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 } 
               }}
             />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: '#fff', 
                 border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-                fontSize: '12px'
+                borderRadius: '8px',
+                fontSize: '12px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
               }}
               formatter={(value: any, name: any, props: any) => [
                 `${value?.toFixed(2)} MW (n=${props.payload.count})`, 
@@ -216,24 +231,30 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
               type="monotone" 
               dataKey="error" 
               stroke="#10b981" 
-              strokeWidth={2}
-              dot={{ fill: '#10b981', r: 4 }}
+              strokeWidth={3}
+              dot={{ fill: '#10b981', r: 5, strokeWidth: 2, stroke: '#fff' }}
               name="Average Error"
+              activeDot={{ r: 7 }}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Error vs Forecast Horizon */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Error vs Forecast Horizon
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          How forecast accuracy degrades with longer horizons
-        </p>
-        <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={errorByHorizon} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <span>⏱️</span>
+              Error vs Forecast Horizon
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">
+              How forecast accuracy degrades with longer horizons
+            </p>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={340}>
+          <LineChart data={errorByHorizon} margin={{ top: 5, right: 30, left: 20, bottom: 50 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
               dataKey="horizon" 
@@ -241,8 +262,8 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
               label={{ 
                 value: 'Forecast Horizon', 
                 position: 'insideBottom', 
-                offset: -10, 
-                style: { fill: '#6b7280', fontSize: 12 } 
+                offset: -15, 
+                style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 } 
               }}
             />
             <YAxis 
@@ -251,15 +272,16 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
                 value: 'Average Error (MW)', 
                 angle: -90, 
                 position: 'insideLeft', 
-                style: { fill: '#6b7280', fontSize: 12 } 
+                style: { fill: '#6b7280', fontSize: 12, fontWeight: 600 } 
               }}
             />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: '#fff', 
                 border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-                fontSize: '12px'
+                borderRadius: '8px',
+                fontSize: '12px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
               }}
               formatter={(value: any, name: any, props: any) => [
                 `${value?.toFixed(2)} MW (n=${props.payload.count})`, 
@@ -270,13 +292,15 @@ export default function ErrorAnalysisCharts({ data }: ErrorAnalysisChartsProps) 
               type="monotone" 
               dataKey="error" 
               stroke="#8b5cf6" 
-              strokeWidth={2}
-              dot={{ fill: '#8b5cf6', r: 5 }}
+              strokeWidth={3}
+              dot={{ fill: '#8b5cf6', r: 6, strokeWidth: 2, stroke: '#fff' }}
               name="Average Error"
+              activeDot={{ r: 8 }}
             />
           </LineChart>
         </ResponsiveContainer>
-        <p className="text-xs text-gray-500 mt-2 italic">
+        <p className="text-xs text-gray-500 mt-3 italic flex items-center gap-1">
+          <span>ℹ️</span>
           Note: Horizon distribution is estimated. Production version would use actual publishTime data.
         </p>
       </div>

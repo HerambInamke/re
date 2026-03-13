@@ -1,6 +1,6 @@
 'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, TooltipProps } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ProcessedDataPoint } from '@/lib/types';
 import { format } from 'date-fns';
 
@@ -9,7 +9,7 @@ interface ForecastChartProps {
 }
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const actual = payload[0]?.value;
     const forecast = payload[1]?.value;
