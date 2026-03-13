@@ -39,14 +39,14 @@ export default function KpiCards({ metrics }: KpiCardsProps) {
       {cards.map((card, index) => (
         <div 
           key={index}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
+          className="bg-gray-50 border border-gray-200 rounded-lg p-4"
         >
           <h3 className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">
             {card.title}
           </h3>
           
           <div className="flex items-baseline gap-2 mb-1">
-            <p className="text-3xl font-semibold text-gray-900">
+            <p className="text-2xl font-semibold text-gray-900">
               {card.value}
             </p>
             <span className="text-sm text-gray-500">{card.unit}</span>

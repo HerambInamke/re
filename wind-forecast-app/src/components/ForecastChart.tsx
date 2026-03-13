@@ -16,25 +16,25 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const error = actual && forecast ? Math.abs(actual - forecast) : null;
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-        <p className="text-sm font-semibold text-gray-900 mb-2">{label}</p>
+      <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+        <p className="text-xs font-medium text-gray-900 mb-2">{label}</p>
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600"></div>
             <span className="text-xs text-gray-600">Actual:</span>
-            <span className="text-sm font-semibold text-gray-900">{actual?.toFixed(2)} MW</span>
+            <span className="text-xs font-medium text-gray-900">{actual?.toFixed(2)} MW</span>
           </div>
           {forecast !== null && (
             <>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="w-3 h-3 rounded-full bg-green-600"></div>
                 <span className="text-xs text-gray-600">Forecast:</span>
-                <span className="text-sm font-semibold text-gray-900">{forecast?.toFixed(2)} MW</span>
+                <span className="text-xs font-medium text-gray-900">{forecast?.toFixed(2)} MW</span>
               </div>
               {error !== null && (
                 <div className="flex items-center gap-2 pt-1 border-t border-gray-200 mt-1">
                   <span className="text-xs text-gray-600">Error:</span>
-                  <span className="text-sm font-semibold text-orange-600">{error.toFixed(2)} MW</span>
+                  <span className="text-xs font-medium text-orange-600">{error.toFixed(2)} MW</span>
                 </div>
               )}
             </>
@@ -56,13 +56,13 @@ export default function ForecastChart({ data }: ForecastChartProps) {
   }));
 
   return (
-    <div className="w-full bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+    <div className="w-full bg-gray-50 border border-gray-200 rounded-lg p-5">
       <div className="mb-4">
         <h3 className="text-sm font-medium text-gray-900">
           Wind Generation: Actual vs Forecast
         </h3>
         <p className="text-xs text-gray-600 mt-1">
-          Real-time comparison of forecasted and actual wind power generation
+          Comparison of forecasted and actual wind power generation
         </p>
       </div>
       
@@ -95,22 +95,22 @@ export default function ForecastChart({ data }: ForecastChartProps) {
           <Line 
             type="monotone" 
             dataKey="actual" 
-            stroke="#3b82f6" 
+            stroke="#2563eb" 
             name="Actual Generation"
             strokeWidth={2}
             dot={false}
             connectNulls
-            activeDot={{ r: 5, fill: '#3b82f6' }}
+            activeDot={{ r: 5, fill: '#2563eb' }}
           />
           <Line 
             type="monotone" 
             dataKey="forecast" 
-            stroke="#10b981" 
+            stroke="#16a34a" 
             name="Forecast Generation"
             strokeWidth={2}
             dot={false}
             connectNulls={false}
-            activeDot={{ r: 5, fill: '#10b981' }}
+            activeDot={{ r: 5, fill: '#16a34a' }}
           />
         </LineChart>
       </ResponsiveContainer>
