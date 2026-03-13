@@ -4,14 +4,14 @@ import { calculateMetrics } from './calculateMetrics';
 /**
  * Process and align forecast data with actual generation data based on forecast horizon.
  * 
- * Forecast Horizon Logic:
- * For each target generation time (startTime), select the most recent forecast where:
- * publishTime ≤ targetTime - forecastHorizon
- * 
- * Example:
- * - targetTime = 24 May 2024 18:00
- * - horizon = 4 hours
- * - Use forecast with publishTime ≤ 14:00 (choose the latest one available)
+ * Forecast Matching Logic:
+ * For each actual generation record:
+ *   targetTime = actual.startTime
+ *   Use the horizon value provided by the frontend slider
+ *   Select forecasts where: publishTime ≤ targetTime - horizon
+ *   From these forecasts choose the one with the most recent publishTime
+ *   Use that generation value as the forecast
+ *   If no valid forecast exists, return forecast = null
  * 
  * @param actuals - Array of actual wind generation data points
  * @param forecasts - Array of forecast data points
@@ -23,66 +23,109 @@ export function processForecasts(
   forecasts: ForecastDataPoint[],
   horizonHours: number
 ): { data: ProcessedDataPoint[]; metrics: Metrics } {
-  // Step 1: Filter forecasts to only include those within 0-48 hour horizon range
-  const filteredForecasts = forecasts.filter(f => {
-    const publishTime = new Date(f.publishTime).getTime();
-    const startTime = new Date(f.startTime).getTime();
-    const horizonMs = startTime - publishTime;
-    const horizonHoursCalc = horizonMs / (1000 * 60 * 60);
-    return horizonHoursCalc >= 0 && horizonHoursCalc <= 48;
-  });
+  console.log(`Processing ${actuals.length} actuals with ${forecasts.length} forecasts, horizon: ${horizonHours}h`);
+  
+  // Validate inputs - never crash
+  if (!actuals || actuals.length === 0) {
+    console.warn('No actuals provided to processForecasts');
+    return {
+      data: [],
+      metrics: { mae: 0, rmse: 0, medianError: 0, p99Error: 0, bias: 0, count: 0 }
+    };
+  }
 
-  // Step 2: Create a map of actuals by time for quick lookup
-  const actualsMap = new Map<string, number>();
-  actuals.forEach(a => {
-    actualsMap.set(a.startTime, a.generation);
-  });
+  // Convert horizon to milliseconds
+  const horizonMs = horizonHours * 60 * 60 * 1000;
 
-  // Step 3: Group forecasts by their target time (startTime)
-  // This allows us to find all forecasts that predict a specific time
-  const forecastsByTarget = new Map<string, ForecastDataPoint[]>();
-  filteredForecasts.forEach(f => {
-    if (!forecastsByTarget.has(f.startTime)) {
-      forecastsByTarget.set(f.startTime, []);
-    }
-    forecastsByTarget.get(f.startTime)!.push(f);
-  });
-
-  // Step 4: Process each actual data point and find matching forecast
+  // Process each actual data point
   const processedData: ProcessedDataPoint[] = [];
 
   actuals.forEach(actual => {
-    const targetTime = new Date(actual.startTime).getTime();
-    // Calculate the maximum publish time based on horizon
-    // If horizon is 4 hours and target is 18:00, max publish time is 14:00
-    const maxPublishTime = targetTime - (horizonHours * 60 * 60 * 1000);
+    try {
+      // Validate actual has required fields
+      if (!actual.startTime) {
+        console.warn('Actual missing startTime:', actual);
+        return;
+      }
 
-    // Step 5: Find all forecasts for this target time
-    const candidateForecasts = forecastsByTarget.get(actual.startTime) || [];
-    
-    // Step 6: Filter to only forecasts published before the horizon cutoff
-    const validForecasts = candidateForecasts.filter(f => {
-      const publishTime = new Date(f.publishTime).getTime();
-      return publishTime <= maxPublishTime;
-    });
+      // targetTime = actual.startTime
+      const targetTime = new Date(actual.startTime).getTime();
+      
+      // Validate date conversion
+      if (isNaN(targetTime)) {
+        console.warn('Invalid startTime in actual:', actual.startTime);
+        return;
+      }
 
-    // Step 7: Select the most recent valid forecast (latest publishTime)
-    let selectedForecast: ForecastDataPoint | null = null;
-    if (validForecasts.length > 0) {
-      selectedForecast = validForecasts.reduce((latest, current) => {
-        return new Date(current.publishTime) > new Date(latest.publishTime) ? current : latest;
+      // Calculate cutoff: publishTime ≤ targetTime - horizon
+      const maxPublishTime = targetTime - horizonMs;
+
+      // Select forecasts where publishTime ≤ targetTime - horizon
+      const validForecasts = forecasts.filter(f => {
+        try {
+          // Validate forecast has required fields
+          if (!f.publishTime || !f.startTime) {
+            return false;
+          }
+
+          // Check if this forecast is for our target time
+          if (f.startTime !== actual.startTime) {
+            return false;
+          }
+
+          // Parse publish time
+          const publishTime = new Date(f.publishTime).getTime();
+          
+          // Validate date conversion
+          if (isNaN(publishTime)) {
+            return false;
+          }
+
+          // Check if published before cutoff
+          return publishTime <= maxPublishTime;
+        } catch (error) {
+          console.error('Error filtering forecast:', error);
+          return false;
+        }
       });
-    }
 
-    // Step 8: Create data point with actual and forecast values
-    processedData.push({
-      time: actual.startTime,
-      actual: actual.generation,
-      forecast: selectedForecast ? selectedForecast.generation : null
-    });
+      // If no valid forecast exists, return forecast = null
+      if (validForecasts.length === 0) {
+        processedData.push({
+          time: actual.startTime,
+          actual: actual.generation,
+          forecast: null
+        });
+        return;
+      }
+
+      // From these forecasts choose the one with the most recent publishTime
+      const latestForecast = validForecasts.reduce((latest, current) => {
+        try {
+          const latestTime = new Date(latest.publishTime).getTime();
+          const currentTime = new Date(current.publishTime).getTime();
+          return currentTime > latestTime ? current : latest;
+        } catch {
+          return latest;
+        }
+      });
+
+      // Use that generation value as the forecast
+      processedData.push({
+        time: actual.startTime,
+        actual: actual.generation,
+        forecast: latestForecast.generation
+      });
+
+    } catch (error) {
+      console.error('Error processing actual:', error, actual);
+      // Don't crash - just skip this data point
+    }
   });
 
-  // Step 9: Calculate performance metrics dynamically from processed data
+  console.log(`Created ${processedData.length} processed data points`);
+
+  // Calculate performance metrics dynamically from processed data
   const metrics = calculateMetrics(processedData);
 
   return { data: processedData, metrics };

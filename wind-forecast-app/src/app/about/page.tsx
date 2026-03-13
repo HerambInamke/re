@@ -27,8 +27,61 @@ export default function AboutPage() {
               The Wind Power Forecast Monitoring Dashboard is a production-quality data visualization 
               application that compares actual vs forecasted wind generation data in the United Kingdom. 
               It uses real-time data from the BMRS (Balancing Mechanism Reporting Service) API to provide 
-              insights into forecast accuracy and performance.
+              insights into forecast accuracy, performance, and reliability for grid planning.
             </p>
+          </section>
+
+          {/* Application Screens */}
+          <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Application Screens</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                  <span>📊</span>
+                  Dashboard
+                </h4>
+                <p className="text-gray-700 mb-2">
+                  Main monitoring interface showing real-time comparison of actual vs forecasted wind generation.
+                </p>
+                <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4 text-sm">
+                  <li>Time-series chart with actual (blue) and forecast (green) lines</li>
+                  <li>Four KPI cards: MAE, RMSE, Median Error, P99 Error</li>
+                  <li>Interactive date range and horizon controls</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                  <span>📈</span>
+                  Analytics
+                </h4>
+                <p className="text-gray-700 mb-2">
+                  Detailed error analysis and forecast performance metrics.
+                </p>
+                <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4 text-sm">
+                  <li>Error distribution histogram</li>
+                  <li>Error by time of day analysis</li>
+                  <li>Error vs forecast horizon chart</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                  <span>⚡</span>
+                  Reliability
+                </h4>
+                <p className="text-gray-700 mb-2">
+                  Evaluate how dependable wind power is for meeting electricity demand.
+                </p>
+                <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4 text-sm">
+                  <li>Wind generation distribution histogram</li>
+                  <li>Percentile chart (P10, P50, P90)</li>
+                  <li>Reliability recommendation panel for grid operators</li>
+                  <li>Grid planning insights and recommendations</li>
+                </ul>
+              </div>
+            </div>
           </section>
 
           {/* Data Sources */}

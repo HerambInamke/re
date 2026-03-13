@@ -6,7 +6,7 @@ import { ForecastDataPoint } from './types';
  * The WINDFOR dataset provides wind generation forecasts with:
  * - startTime: The time period being forecasted
  * - publishTime: When the forecast was published
- * - generation: Forecasted generation in MW
+ * - quantity: Forecasted generation in MW
  * 
  * @param startDate - Start date in format 'YYYY-MM-DD HH:MM'
  * @param endDate - End date in format 'YYYY-MM-DD HH:MM'
@@ -16,20 +16,39 @@ export async function fetchForecasts(
   startDate: string,
   endDate: string
 ): Promise<ForecastDataPoint[]> {
-  const url = `https://data.elexon.co.uk/bmrs/api/v1/datasets/WINDFOR?publishDateTimeFrom=${startDate}&publishDateTimeTo=${endDate}&format=json`;
+  // Format dates for BMRS API (URL encode spaces)
+  const formattedStart = encodeURIComponent(startDate);
+  const formattedEnd = encodeURIComponent(endDate);
   
-  const response = await fetch(url);
+  const url = `https://data.elexon.co.uk/bmrs/api/v1/datasets/WINDFOR?publishDateTimeFrom=${formattedStart}&publishDateTimeTo=${formattedEnd}&format=json`;
+  
+  console.log('Fetching forecasts from:', url);
+  
+  const response = await fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch forecasts: ${response.statusText}`);
+    const errorText = await response.text();
+    console.error('BMRS API Error (Forecasts):', response.status, errorText);
+    throw new Error(`Failed to fetch forecasts: ${response.status} ${response.statusText}`);
   }
   
   const json = await response.json();
   
-  // Map API response to our data structure using 'generation' field
+  console.log('Forecasts response sample:', json.data?.[0]);
+  
+  if (!json.data || !Array.isArray(json.data)) {
+    throw new Error('Invalid response format from BMRS WINDFOR API');
+  }
+  
+  // Map API response to our data structure
+  // BMRS uses 'quantity' field for generation values
   return json.data.map((item: any) => ({
     startTime: item.startTime,
     publishTime: item.publishTime,
-    generation: item.generation || item.quantity || 0
+    generation: Number(item.quantity) || 0
   }));
 }

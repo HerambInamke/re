@@ -14,19 +14,38 @@ export async function fetchActuals(
   startDate: string,
   endDate: string
 ): Promise<ActualDataPoint[]> {
-  const url = `https://data.elexon.co.uk/bmrs/api/v1/datasets/FUELHH?publishDateTimeFrom=${startDate}&publishDateTimeTo=${endDate}&fuelType=WIND&format=json`;
+  // Format dates for BMRS API (URL encode spaces)
+  const formattedStart = encodeURIComponent(startDate);
+  const formattedEnd = encodeURIComponent(endDate);
   
-  const response = await fetch(url);
+  const url = `https://data.elexon.co.uk/bmrs/api/v1/datasets/FUELHH?publishDateTimeFrom=${formattedStart}&publishDateTimeTo=${formattedEnd}&fuelType=WIND&format=json`;
+  
+  console.log('Fetching actuals from:', url);
+  
+  const response = await fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch actuals: ${response.statusText}`);
+    const errorText = await response.text();
+    console.error('BMRS API Error (Actuals):', response.status, errorText);
+    throw new Error(`Failed to fetch actuals: ${response.status} ${response.statusText}`);
   }
   
   const json = await response.json();
   
-  // Map API response to our data structure using 'generation' field
+  console.log('Actuals response sample:', json.data?.[0]);
+  
+  if (!json.data || !Array.isArray(json.data)) {
+    throw new Error('Invalid response format from BMRS FUELHH API');
+  }
+  
+  // Map API response to our data structure
+  // BMRS uses 'quantity' field, not 'generation'
   return json.data.map((item: any) => ({
     startTime: item.startTime,
-    generation: item.generation || item.quantity || 0
+    generation: Number(item.quantity) || 0
   }));
 }
