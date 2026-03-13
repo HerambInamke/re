@@ -1,0 +1,29 @@
+// Type definitions for wind forecast data
+
+export interface ActualDataPoint {
+  startTime: string;
+  quantity: number;
+}
+
+export interface ForecastDataPoint {
+  startTime: string;
+  publishTime: string;
+  quantity: number;
+}
+
+export interface ProcessedDataPoint {
+  time: string;
+  actual: number | null;
+  forecast: number | null;
+}
+
+export interface Metrics {
+  mae: number;
+  rmse: number;
+  medianError: number;
+}
+
+export interface WindDataResponse {
+  data: ProcessedDataPoint[];
+  metrics: Metrics;
+}
